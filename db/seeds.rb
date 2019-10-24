@@ -11,6 +11,7 @@ City.destroy_all
 Dog.destroy_all
 Dogsitter.destroy_all
 Stroll.destroy_all
+JoinDogStroll.destroy_all
 
 
 # création de ville (5 pour débuter)
@@ -24,13 +25,17 @@ end
 end
 
 # on crée des dogsitters aux noms d'humains 
-100.times do
+30.times do
 	Dogsitter.create(name:Faker::Name.name, city_id:City.all.sample.id)	
 end
 
-# Generation de strolls par ville (afin de s'assurer que les chiens et les sitters sont de la meme ville)
-City.all.each do |city|
-	100.times do
-		Stroll.create(date:Faker::Date.in_date_period, dog_id:Dog.where(city_id: city.id).sample.id, dogsitter_id:Dogsitter.where(city_id: city.id).sample.id)
-	end
+100.times do
+		Stroll.create(date:Faker::Date.in_date_period, dogsitter_id:Dogsitter.all.sample.id)
+end
+
+# Generation choix des chiens selon la ville du Dogsitter de la stroll
+
+200.times do
+		stroll = Stroll.all.sample
+		JoinDogStroll.create(stroll_id: stroll.id, dog_id: Dog.where(city_id: Dogsitter.find(stroll.dogsitter_id).city_id).sample.id)
 end
